@@ -375,6 +375,25 @@ def factorial(N):
         ret *= n
     return ret
 
+def fromBinDat(dat, ISIs=False, SpkTs=False):
+    if len(dat.shape) == 1:
+        dat = dat.reshape((len(dat), 1))
+    N  = dat.shape[0]
+    TR = dat.shape[1]
+
+    isis  = []
+    spkts = []
+    for tr in xrange(TR):
+        ts = _N.where(dat[:, tr] == 1)[0]
+        spkts.extend(ts)
+        isis.extend(ts[1:] - ts[0:-1])
+    if ISIs and (not SpkTs):
+        return isis
+    elif (not ISIs) and SpkTs:
+        return spkts
+    else:
+        return isis, spkts
+
 def toISI(spksByTrialOrNeuron):
     """
     return me an isis as an array of arrays, either by neuron
