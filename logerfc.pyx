@@ -21,7 +21,7 @@ def init():
     global _logerfc, _x1, _R, _dx
 
     if _logerfc == None:
-        fpk = open("/home/karai/usb/nctc/mscripts/logerfc.dat", "r")
+        fpk = open("/home/karai/nctc/mscripts/logerfc.dat", "r")
         dat = _pkl.load(fpk)
         _logerfc = dat
         _R, c     = _logerfc.shape
