@@ -1,38 +1,59 @@
 #  given covariance matrix and list of indices, tell me what the 
 import numpy as _N
 
-
-def marginalPDF(cov, lndx, cond_on_this=None):
+def conditionalPDF(mn, cov, mrgidx, cond_on_this=None):
     """
     cov    covariance matrix 
-    lndx   list of indices to marginalize over
+    mrgidx   list of indices to marginalize over  
 
     #  For given values of 
     """
     dim = cov.shape[0]
     
     allind = _N.arange(dim)
-    ulndx= _N.setdiff1d(allind, lndx)
+    umrgidx= _N.setdiff1d(allind, mrgidx)
 
-    dimMO= lndx.shape[0]
-    dimM = ulndx.shape[0]
+    dimMO= mrgidx.shape[0]
+    dimNM = umrgidx.shape[0]
     reord= _N.empty((dim, dim))
-    
-    A    = cov[_N.ix_(ulndx,  ulndx)]
-    B    = cov[_N.ix_(lndx,    lndx)]
-    C    = cov[_N.ix_(lndx,   ulndx)]
 
-    reord[0:dimM, 0:dimM] = A
-    reord[dimM:,  dimM:]  = B
-    B[0:dimM, dimM:]      = C.T
-    B[dimM:,  0:dimM]     = C
+    A    = cov[_N.ix_(umrgidx,  umrgidx)]
+    B    = cov[_N.ix_(mrgidx,    mrgidx)]
+    C    = cov[_N.ix_(mrgidx,   umrgidx)]
+
+    reord[0:dimNM, 0:dimNM] = A
+    reord[dimNM:,  dimNM:]  = B
+    reord[0:dimNM, dimNM:]      = C.T
+    reord[dimNM:,  0:dimNM]     = C
 
     if cond_on_this is None:
         return A, B, C
     else:
         Bi = _N.linalg.inv(B)
         us = _N.dot(_N.dot(C.T, Bi), cond_on_this)
-        return A, B, C, us, A - _N.dot(C.T, _N.dot(Bi, C))
+        return us, A - _N.dot(C.T, _N.dot(Bi, C))
+
+def marginalPDF(mn, cov, mrgidx):
+    """
+    cov    covariance matrix 
+    mrgidx   list of indices to marginalize over  
+
+    #  For given values of 
+    """
+    dim = cov.shape[0]
+    
+    allind = _N.arange(dim)
+    umrgidx= _N.setdiff1d(allind, mrgidx)
+
+    dimMO= mrgidx.shape[0]
+    dimNM = umrgidx.shape[0]
+    reord= _N.empty((dim, dim))
+
+    A    = cov[_N.ix_(umrgidx,  umrgidx)]
+    B    = cov[_N.ix_(mrgidx,    mrgidx)]
+    C    = cov[_N.ix_(mrgidx,   umrgidx)]
+
+    return mn[umrgidx], A
 
 def practice():    
     #  remove rows and columns from matrix
