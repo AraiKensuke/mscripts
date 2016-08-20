@@ -3,7 +3,7 @@ import scipy as _sci
 import matplotlib.pyplot as _plt
 import numpy as _N
 import utilities as _U
-import em as _em
+#import em as _em
 
 def multiState3(cnts, blksz=50, start=None, stop=None, ICs=25):
     L = len(cnts)

@@ -880,20 +880,27 @@ def verycleanPlot(ax):
     ax.xaxis.set_ticks_position("bottom")
     ax.yaxis.set_ticks_position("left")
 
-def uniqFN(filename, serial=False):
+def uniqFN(filename, serial=False, iStart=1, returnPrevious=False):
     if not serial:   #  only time to look for a bare filename
         if not os.access(filename, os.F_OK):
             return filename
     else:
         fn, ext = os.path.splitext(filename)   #    ext includes .
-        print fn
-        i   = 1
+        i   = iStart
         fnI = "%(fn)s-%(i)d" % {"fn" : fn, "i" : i}
-        print fnI + ext
+        ofnI = None
         while os.access(fnI + ext, os.F_OK):
             i += 1
+            ofnI= fnI
             fnI = "%(fn)s-%(i)d" % {"fn" : fn, "i" : i}
-        return fnI + ext
+
+        if not returnPrevious:
+            return fnI + ext
+        else:
+            if ofnI is not None:
+                return ofnI + ext, fnI + ext
+            else:
+                return None, fnI + ext
 
 def cubicRoots(a, b, c, d):
     #  ax^3 + bx^2 + cx + d = 0
